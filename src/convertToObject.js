@@ -1,5 +1,7 @@
 'use strict';
 
+'use strict';
+
 /**
  * @param {string} sourceString
  *
@@ -10,29 +12,22 @@ function convertToObject(sourceString) {
     return {};
   }
 
-  const result = {};
-  const declarations = sourceString.split(';');
+  return sourceString
+    .split(';')
+    .map((declaration) => declaration.trim())
+    .filter((declaration) => declaration)
+    .reduce((acc, declaration) => {
+      const colonIndex = declaration.indexOf(':');
 
-  for (const declaration of declarations) {
-    const trimmedDecl = declaration.trim();
+      if (colonIndex !== -1) {
+        const property = declaration.substring(0, colonIndex).trim();
+        const value = declaration.substring(colonIndex + 1).trim();
 
-    if (!trimmedDecl) {
-      continue;
-    }
+        acc[property] = value;
+      }
 
-    const colonIndex = trimmedDecl.indexOf(':');
-
-    if (colonIndex === -1) {
-      continue;
-    }
-
-    const property = trimmedDecl.substring(0, colonIndex).trim();
-    const value = trimmedDecl.substring(colonIndex + 1).trim();
-
-    result[property] = value;
-  }
-
-  return result;
+      return acc;
+    }, {});
 }
 
 module.exports = convertToObject;
